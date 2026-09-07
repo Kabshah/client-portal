@@ -74,3 +74,15 @@ The frontend is a Next.js application.
 - **Frontend**: Ensure you set the `NEXT_PUBLIC_API_BASE_URL` environment variable.
 - **Backend**: Can be compiled into a binary (`go build -o app ./cmd/api`)
 - **Database**: Use a managed PostgreSQL instance.
+
+---
+
+## Workflow Automation (n8n)
+
+This project integrates with **n8n** for automated workflows (like processing readiness emails or syncing data). 
+
+1. Install and run n8n (via Docker or desktop app).
+2. Import the provided `n8n_template.json` file found in the root directory into your n8n workspace.
+3. Configure the webhook nodes inside n8n to generate a **Test Webhook URL** or **Production Webhook URL**.
+4. Copy the webhook URL and paste it into your backend `.env` file under `N8N_WEBHOOK_URL`.
+5. Activate the workflow in n8n.
