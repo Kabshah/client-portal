@@ -1,0 +1,22 @@
+root = "."
+tmp_dir = "tmp"
+env_files = [".env"]
+
+[build]
+cmd = "go build -o ./tmp/api.exe ./cmd/api"
+bin = "tmp\\api.exe"
+full_bin = ".\\tmp\\api.exe"
+
+include_ext = ["go", "env", "sql"]
+exclude_dir = ["tmp", "vendor"]
+exclude_regex = ["_test\\.go"]
+exclude_unchanged = true
+follow_symlink = true
+log = "air.log"
+delay = 300
+
+[log]
+time = true
+
+[misc]
+clean_on_exit = true

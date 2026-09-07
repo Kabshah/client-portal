@@ -1,0 +1,516 @@
+{
+  "name": "Client Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Client Onboarding Readiness Desk",
+        "formDescription": "Submit your onboarding details. This workflow checks whether the project is ready to begin or if more information is needed first.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Client Name",
+              "fieldName": "client_name",
+              "placeholder": "John Doe",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Client Email",
+              "fieldType": "email",
+              "fieldName": "client_email",
+              "placeholder": "johndoe@gmail.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Service Package",
+              "fieldType": "dropdown",
+              "fieldName": "service_package",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Website / Landing Page"
+                  },
+                  {
+                    "option": "Automation / Operations"
+                  },
+                  {
+                    "option": "Software / App Development"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Project Goal",
+              "fieldType": "textarea",
+              "fieldName": "project_goal",
+              "placeholder": "Example: We need a landing page redesign to improve demo bookings. , Example: 4 weeks, next month, or flexible",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Desired Timeline",
+              "fieldName": "desired_timeline",
+              "placeholder": "Ex: 4 weeks, next month or flexible",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Assests Provided",
+              "fieldType": "radio",
+              "fieldName": "assets_provided",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Ready"
+                  },
+                  {
+                    "option": "Partially Ready "
+                  },
+                  {
+                    "option": "Not Ready"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bd7dd04d-aa2f-4334-aa8c-b7d5cdb27531",
+      "name": "Receive Client Onboarding Form",
+      "webhookId": "6c29fe16-b1ff-48e7-aad9-0aff51472522"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an onboarding operations assistant for agencies, consultants, freelancers, studios, and service businesses.\n\nYour job is to review a client onboarding submission and decide whether the onboarding is ready to begin or whether more information is needed first.\n\nUse only the submitted form data. Do not invent facts, tools, meetings, deadlines, access requirements, team actions, or project steps that are not supported by the submission.\n\nReadiness rules:\n\nMark readiness_status as \"ready\" only when:\n- client_name is present\n- client_email is present\n- service_package is selected\n- project_goal is clear enough to understand the requested work\n- desired_timeline is provided and understandable\n- assets_provided is \"Ready\", or the submission clearly gives enough information to begin even if assets are only partly ready\n\nMark readiness_status as \"missing_info\" when:\n- project_goal is vague or too short to understand the work\n- desired_timeline is missing, unclear, or obviously unrealistic for the request\n- assets_provided is \"Not Ready\"\n- assets_provided is \"Partially Ready\" and the selected service/package likely needs more material before work can begin\n- service_package is \"Other\" and the project goal does not clearly explain what service is needed\n- important context is missing for the selected service/package\n\nMissing items rules:\n- missing_items must always be an array.\n- If readiness_status is \"ready\", missing_items must be an empty array.\n- If readiness_status is \"missing_info\", missing_items must contain clear, specific missing items.\n- Write missing_items as short labels or short phrases.\n- Do not ask for information that was already provided.\n\nAI summary rules:\n- ai_summary must be 1 to 2 concise sentences.\n- Mention the client, selected service/package, project goal, timeline, and asset status.\n- Do not exaggerate the submission.\n- Do not say the submission is complete unless readiness_status is \"ready\".\n\nRecommended next action rules:\n- recommended_next_action must be one concise sentence.\n- If readiness_status is \"ready\", recommend approving the submission and starting onboarding.\n- If readiness_status is \"missing_info\", recommend collecting the missing information first.\n- Do not mention internal tools, databases, automation, AI, n8n, Notion, Gmail, or workflow tools.\n\nTone rules:\n- Use \"we\" instead of \"I\".\n- Keep the language direct and useful.\n- Do not overpromise.\n- Do not add hype.\n\nSubmitted data:\n\nClient Name:\n{{ $json.client_name }}\n\nClient Email:\n{{ $json.client_email }}\n\nService Package:\n{{ $json.service_package }}\n\nProject Goal:\n{{ $json.project_goal }}\n\nDesired Timeline:\n{{ $json.desired_timeline }}\n\nAssets Provided:\n{{ $json.assets_provided }}\n\nReturn the result using the required structured output format.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "572e6779-0e04-4f98-8c49-cd7461788706",
+      "name": "Check Form Onboarding Readiness"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        592
+      ],
+      "id": "a3de85ac-83de-45d0-bcea-0cab131b360d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Km6aJcPaLEhgn1sV",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"readiness_status\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"ready\",\n        \"missing_info\"\n      ]\n    },\n    \"missing_items\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"ai_summary\": {\n      \"type\": \"string\"\n    },\n    \"recommended_next_action\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"readiness_status\",\n    \"missing_items\",\n    \"ai_summary\",\n    \"recommended_next_action\"\n  ],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        592
+      ],
+      "id": "8fced506-65ec-4269-927a-c1986a7155e5",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "client-onboarding-readiness",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        256
+      ],
+      "id": "b88b8da9-ad4f-40de-88e6-0ca8cff4f2bb",
+      "name": "App Webhook Trigger",
+      "webhookId": "5335b609-e1d7-4ca7-8ad4-e467258edd51"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ebbd41d9-a659-42ed-8ba4-71f72d63307b",
+              "name": "client_name",
+              "value": "={{ $json.body.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "40a9f9fb-7fab-4885-923b-f7ca73455ccf",
+              "name": "client_email",
+              "value": "={{ $json.body.client_email }}",
+              "type": "string"
+            },
+            {
+              "id": "8f63ea62-a56f-4f9d-b288-478b592b9552",
+              "name": "service_package",
+              "value": "={{ $json.body.service_package }}",
+              "type": "string"
+            },
+            {
+              "id": "177fd634-294d-4398-b7c5-f85e2a50cc64",
+              "name": "project_goal",
+              "value": "={{ $json.body.project_goal }}",
+              "type": "string"
+            },
+            {
+              "id": "9d6023fc-a3fe-47a2-bfad-d4b5613840b1",
+              "name": "desired_timeline",
+              "value": "={{ $json.body.desired_timeline }}",
+              "type": "string"
+            },
+            {
+              "id": "62fe2c51-1fb5-475f-92cf-d8e5897a6da6",
+              "name": "assets_provided",
+              "value": "={{ $json.body.assets_provided }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        256
+      ],
+      "id": "54ad2fcc-bc60-4902-8aad-7329d9f97f50",
+      "name": "Normalize Webhook Submission"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an onboarding operations assistant for agencies, consultants, freelancers, studios, and service businesses.\n\nYour job is to review a client onboarding submission and decide whether the onboarding is ready to begin or whether more information is needed first.\n\nUse only the submitted form data. Do not invent facts, tools, meetings, deadlines, access requirements, team actions, or project steps that are not supported by the submission.\n\nReadiness rules:\n\nMark readiness_status as \"ready\" only when:\n- client_name is present\n- client_email is present\n- service_package is selected\n- project_goal is clear enough to understand the requested work\n- desired_timeline is provided and understandable\n- assets_provided is \"Ready\", or the submission clearly gives enough information to begin even if assets are only partly ready\n\nMark readiness_status as \"missing_info\" when:\n- project_goal is vague or too short to understand the work\n- desired_timeline is missing, unclear, or obviously unrealistic for the request\n- assets_provided is \"Not Ready\"\n- assets_provided is \"Partially Ready\" and the selected service/package likely needs more material before work can begin\n- service_package is \"Other\" and the project goal does not clearly explain what service is needed\n- important context is missing for the selected service/package\n\nMissing items rules:\n- missing_items must always be an array.\n- If readiness_status is \"ready\", missing_items must be an empty array.\n- If readiness_status is \"missing_info\", missing_items must contain clear, specific missing items.\n- Write missing_items as short labels or short phrases.\n- Do not ask for information that was already provided.\n\nAI summary rules:\n- ai_summary must be 1 to 2 concise sentences.\n- Mention the client, selected service/package, project goal, timeline, and asset status.\n- Do not exaggerate the submission.\n- Do not say the submission is complete unless readiness_status is \"ready\".\n\nRecommended next action rules:\n- recommended_next_action must be one concise sentence.\n- If readiness_status is \"ready\", recommend approving the submission and starting onboarding.\n- If readiness_status is \"missing_info\", recommend collecting the missing information first.\n- Do not mention internal tools, databases, automation, AI, n8n, Notion, Gmail, or workflow tools.\n\nTone rules:\n- Use \"we\" instead of \"I\".\n- Keep the language direct and useful.\n- Do not overpromise.\n- Do not add hype.\n\nSubmitted data:\n\nClient Name:\n{{ $json.client_name }}\n\nClient Email:\n{{ $json.client_email }}\n\nService Package:\n{{ $json.service_package }}\n\nProject Goal:\n{{ $json.project_goal }}\n\nDesired Timeline:\n{{ $json.desired_timeline }}\n\nAssets Provided:\n{{ $json.assets_provided }}\n\nReturn the result using the required structured output format.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        432,
+        256
+      ],
+      "id": "c68c8c30-36f2-415f-8ecb-84e0f4608cd0",
+      "name": "Check Webhook Onboarding Readiness"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86e22c5d-f431-4075-bac4-ab71adcad5d2",
+              "name": "client_name",
+              "value": "={{ $('Normalize Webhook Submission').item.json.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "917dd95f-d224-4f79-a9c7-e4a35e9490a3",
+              "name": "client_email",
+              "value": "={{ $('Normalize Webhook Submission').item.json.client_email }}",
+              "type": "string"
+            },
+            {
+              "id": "5879bf81-ae32-463b-957d-3ec64496260e",
+              "name": "service_package",
+              "value": "={{ $('Normalize Webhook Submission').item.json.service_package }}",
+              "type": "string"
+            },
+            {
+              "id": "cc493233-a419-4073-ac06-37a7b41a45fe",
+              "name": "project_goal",
+              "value": "={{ $('Normalize Webhook Submission').item.json.project_goal }}",
+              "type": "string"
+            },
+            {
+              "id": "9d5a6670-9b04-4b69-8ec5-a6d7deb2f6f0",
+              "name": "desired_timeline",
+              "value": "={{ $('Normalize Webhook Submission').item.json.desired_timeline }}",
+              "type": "string"
+            },
+            {
+              "id": "7b984adf-2d41-4099-acdc-9eaa39b7b4f9",
+              "name": "assets_provided",
+              "value": "={{ $('Normalize Webhook Submission').item.json.assets_provided }}",
+              "type": "string"
+            },
+            {
+              "id": "f058b0ae-aabb-40e7-a77c-05ddc2132352",
+              "name": "readiness_status",
+              "value": "={{ $json.output.readiness_status }}",
+              "type": "string"
+            },
+            {
+              "id": "f5f87e1f-8528-4514-8dcf-77dd934858b5",
+              "name": "missing_items",
+              "value": "={{ $json.output.missing_items }}",
+              "type": "array"
+            },
+            {
+              "id": "2815352d-190c-4a70-a365-6ced7ccb873f",
+              "name": "ai_summary",
+              "value": "={{ $json.output.ai_summary }}",
+              "type": "string"
+            },
+            {
+              "id": "3b4921df-ed33-48ef-b9ec-a1e22004592e",
+              "name": "recommended_next_action",
+              "value": "={{ $json.output.recommended_next_action }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        256
+      ],
+      "id": "bcc73f0e-e5bf-4085-bd24-1d0452257934",
+      "name": "Prepare Webhook Result"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1a87f5ac-6711-4615-9de4-95f0907950e7",
+              "name": "client_name",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "830efe7c-ad13-4202-af5d-fe48c89ae1da",
+              "name": "client_email",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.client_email }}",
+              "type": "string"
+            },
+            {
+              "id": "fffd9155-b0c5-40b1-9ffc-4d1b0ee900d7",
+              "name": "service_package",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.service_package }}",
+              "type": "string"
+            },
+            {
+              "id": "ca736318-d999-410f-92ad-68e81ae563ad",
+              "name": "project_goal",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.project_goal }}",
+              "type": "string"
+            },
+            {
+              "id": "0922e79c-d897-4653-8fc8-3080f6bf3c1c",
+              "name": "desired_timeline",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.desired_timeline }}",
+              "type": "string"
+            },
+            {
+              "id": "38af7875-3f5f-4617-a95b-24dbb5bdc27f",
+              "name": "assets_provided",
+              "value": "={{ $('Receive Client Onboarding Form').item.json.assets_provided }}",
+              "type": "string"
+            },
+            {
+              "id": "c57fce0b-9209-4090-a93b-93831ff3cc8c",
+              "name": "readiness_status",
+              "value": "={{ $json.output.readiness_status }}",
+              "type": "string"
+            },
+            {
+              "id": "d8bbfb00-08f5-4085-afd9-c70c11986aec",
+              "name": "missing_items",
+              "value": "={{ $json.output.missing_items }}",
+              "type": "string"
+            },
+            {
+              "id": "3194b67b-e434-45b6-bbbc-422df89798ea",
+              "name": "ai_summary",
+              "value": "={{ $json.output.ai_summary }}",
+              "type": "string"
+            },
+            {
+              "id": "6bdc3591-3609-4399-8448-961138436675",
+              "name": "recommended_next_action",
+              "value": "={{ $json.output.recommended_next_action }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "b99aecdb-2168-4b50-8d2c-82ed7640980b",
+      "name": "Prepare Form Result"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        992,
+        256
+      ],
+      "id": "7ec379e6-256d-427c-a48d-2a75ef72a513",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Client Onboarding Form": {
+      "main": [
+        [
+          {
+            "node": "Check Form Onboarding Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Check Form Onboarding Readiness",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Check Webhook Onboarding Readiness",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Check Form Onboarding Readiness",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Check Webhook Onboarding Readiness",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Form Onboarding Readiness": {
+      "main": [
+        [
+          {
+            "node": "Prepare Form Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "App Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Webhook Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Webhook Submission": {
+      "main": [
+        [
+          {
+            "node": "Check Webhook Onboarding Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Webhook Onboarding Readiness": {
+      "main": [
+        [
+          {
+            "node": "Prepare Webhook Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Webhook Result": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "47eb79d2-09bf-42f6-8020-6c5a61acb4c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9625b197d87b0e449ddbbe286385862cb987a33a4e501823b2bfb8cab97b308b"
+  },
+  "id": "fs97K4AwD9ET3bzL",
+  "tags": []
+}

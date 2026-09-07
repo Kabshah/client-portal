@@ -1,0 +1,5 @@
+docker compose up -d
+cd backend
+go run ./cmd/migrate
+
+create submission, list submission by user id, updata status from admin side

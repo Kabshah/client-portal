@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: n8n-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: n8n_saas
+    ports:
+      - "5434:5432"
+    volumes:
+      - n8n_saas_data:/var/lib/postgresql/data
+
+volumes:
+  n8n_saas_data:
