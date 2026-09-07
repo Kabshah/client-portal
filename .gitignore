@@ -11,6 +11,10 @@ demo.mp4
 walkthru
 walkthru.mp4
 
+# Build / Temp Files
+tmp/
+backend/tmp/
+
 # OS generated files
 .DS_Store
 .DS_Store?
