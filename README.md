@@ -1,12 +1,14 @@
+https://github.com/user-attachments/assets/aa387296-1c4d-46e1-b002-fc18cbdc1850
+
+
 # Client Onboarding Portal
 
 A comprehensive full-stack solution for managing the client onboarding process.
 
 ## Architecture
 
-This project is structured as a monorepo containing:
 - **Frontend (`/frontend`)**: A modern, responsive web application built with Next.js, React, and Tailwind CSS. Provides interfaces for both clients (proposal submission) and administrators (submission management).
-- **Backend (`/backend`)**: A high-performance RESTful API built with Go and the Fiber framework. It handles data persistence, business logic, email notifications, and integrations.
+- **Backend (`/backend`)**: A high-performance RESTful API built with Go and  Fiber framework. It handles data persistence, business logic, email notifications, and integrations.
 
 ---
 
@@ -64,7 +66,6 @@ The frontend is a Next.js application.
    npm install
    npm run dev
    ```
-   *The frontend should now be running on `http://localhost:3000`.*
 
 ---
 
@@ -79,8 +80,7 @@ The frontend is a Next.js application.
 
 This project integrates with **n8n** for automated workflows (like processing readiness emails or syncing data). 
 
-1. Install and run n8n (via Docker or desktop app).
+1. Install and run n8n.
 2. Import the provided `n8n_template.json` file found in the root directory into your n8n workspace.
-3. Configure the webhook nodes inside n8n to generate a **Production Webhook URL**.
-4. Copy the webhook URL and paste it into your backend `.env` file under `N8N_WEBHOOK_URL`.
-5. Publish the workflow in n8n.
+3. Copy the webhook production URL and paste it into your backend `.env` file under `N8N_WEBHOOK_URL`.
+4. Publish the workflow in n8n.
